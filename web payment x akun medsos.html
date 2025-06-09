@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Link Medsos & Payment Kamu!</title>
+    <style>
+        /* Reset CSS dasar biar nggak ada gaya aneh bawaan browser */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Styling Utama Body - Ini buat background */
+        body {
+            font-family: 'Arial', sans-serif; /* Ganti font kalo mau */
+            overflow: hidden; /* Penting biar nggak ada scrollbar aneh dari elemen background/rain */
+            background-color: #000; /* Warna fallback kalo gambar/video nggak load */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+            color: #fff; /* Warna teks default (nanti di container ditimpa) */
+            z-index: 1; /* Biar body di atas elemen background */
+        }
+
+        /* Background Video (pake elemen <video>) */
+        #bgVideo {
+            position: fixed; /* Biar tetep di tempat walau di-scroll (kalaupun ada scroll) */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Pastiin video nutupin seluruh layar */
+            z-index: -2; /* Paling belakang */
+        }
+
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            z-index: -2; /* Sama kayak video, paling belakang */
+            display: block; /* Pastiin elemen pseudo ini muncul */
+        }
+
+        /* Overlay biar teksnya gampang dibaca di atas background */
+        body::after { /* Pake ::after biar nggak nabrak ::before kalo dua2nya aktif (walaupun sebaiknya salah satu aja) */
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6); /* Warna gelap transparan (ganti intensitasnya kalo perlu) */
+            z-index: -1; /* Di atas background foto/video, di bawah konten */
+        }
+
+        /* Kontainer Utama Konten */
+        .container {
+            background-color: rgba(255, 255, 255, 0.85); /* Background putih transparan */
+            padding: 30px;
+            border-radius: 15px; /* Sudut melengkung */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); /* Kasih bayangan biar timbul */
+            text-align: center; /* Konten di tengah semua */
+            width: 100%;
+            max-width: 450px; /* Lebar maksimal */
+            animation: fadeIn 1s ease-in-out; /* Animasi muncul */
+            z-index: 10; /* Pastiin container di paling depan (di atas rain) */
+            position: relative;
+            margin: 20px auto; /* Kasih margin + auto biar ke tengah walau lebar udah max */
+             /* Atur max-height dan overflow-y kalo kontainer jadi terlalu panjang */
+            max-height: 95vh;
+            overflow-y: auto; /* Tambahin scroll kalo kontennya kepanjangan di layar kecil */
+             scrollbar-width: none;  /* Untuk Firefox */
+            -ms-overflow-style: none;  /* Untuk IE dan Edge */
+        }
+        /* Untuk Chrome, Safari, dan Opera */
+        .container::-webkit-scrollbar {
+            display: none;
+        }
+
+
+        /* Animasi Muncul */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Gambar Profil (Opsional) */
+        .profile-pic {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%; /* Bikin bulet */
+            object-fit: cover; /* Pastiin gambar nggak penyok */
+            margin-bottom: 20px;
+            border: 4px solid #fff; /* Border putih */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Bayangan buat gambar */
+        }
+
+        /* Nama/Username */
+        h1 {
+            margin-bottom: 5px;
+            color: #333; /* Biar keliatan di background transparan */
+        }
+
+        /* Sub-judul/Deskripsi Singkat */
+        p.bio {
+            margin-top: 0;
+            color: #555; /* Biar keliatan */
+            font-size: 1.1em;
+            margin-bottom: 30px;
+        }
+
+        /* Styling Link Buttons (Medsos & Payment) */
+        .link-button, .payment-button {
+            display: block; /* Tiap link/button di baris baru */
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #007bff; /* Warna biru standar */
+            color: white;
+            text-decoration: none; /* Hilangin garis bawah link */
+            border-radius: 8px; /* Sudut melengkung */
+            transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease; /* Efek transisi */
+            font-size: 1.1em; /* Ukuran font agak kecil dari sebelumnya biar muat banyak */
+            font-weight: bold;
+            border: none; /* Hilangin border bawaan */
+            cursor: pointer; /* Kasih kursor pointer */
+            text-align: center; /* Pastiin teks di tengah */
+             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Bayangan default */
+        }
+
+        /* Efek Hover pada Link/Button */
+        .link-button:hover, .payment-button:hover {
+            background-color: #0056b3; /* Warna lebih gelap saat di-hover */
+            transform: translateY(-3px); /* Geser sedikit ke atas */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Kasih bayangan saat di-hover */
+        }
+
+        /* Efek Saat Diklik */
+        .link-button:active, .payment-button:active {
+            transform: translateY(0); /* Kembali ke posisi normal */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15); /* Bayangan saat diklik */
+        }
+
+        /* Styling Spesifik per Medsos (contoh, bisa ditambahin) */
+        .link-button.instagram { background-color: #C13584; } /* Ungu Instagram */
+        .link-button.instagram:hover { background-color: #833AB4; }
+         .link-button.whatsapp { background-color: #25D366; } /* Hijau WhatsApp Biasa */
+        .link-button.whatsapp:hover { background-color: #128C7E; }
+         .link-button.whatsapp-channel { background-color: #075E54; } /* Hijau Tua WhatsApp Channel */
+        .link-button.whatsapp-channel:hover { background-color: #044E46; }
+        .link-button.tiktok { background-color: #000; } /* Hitam TikTok */
+        .link-button.tiktok:hover { background-color: #333; }
+        .link-button.youtube { background-color: #FF0000; } /* Merah YouTube */
+        .link-button.youtube:hover { background-color: #CC0000; }
+        .link-button.facebook { background-color: #1877F2; } /* Biru Facebook */
+        .link-button.facebook:hover { background-color: #145CB3; }
+        /* Tambahin sendiri kalo ada medsos lain! */
+
+        /* Styling Section Payment */
+        .payment-section {
+            margin-top: 40px; /* Kasih jarak dari link medsos */
+            padding-top: 20px;
+            border-top: 1px solid #ccc; /* Garis pemisah */
+        }
+
+        .payment-section h2 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 1.5em;
+        }
+
+        /* Styling Spesifik per Payment Method */
+         .payment-button.qris { background-color: #00a693; } /* Teal QRIS */
+         .payment-button.qris:hover { background-color: #008a7a; }
+        .payment-button.dana { background-color: #108ee9; } /* Biru DANA */
+        .payment-button.dana:hover { background-color: #0a7ad1; }
+        .payment-button.ovo { background-color: #4F42B5; } /* Ungu OVO */
+        .payment-button.ovo:hover { background-color: #3f359c; }
+        .payment-button.gopay { background-color: #00A60E; } /* Hijau GoPay */
+        .payment-button.gopay:hover { background-color: #008c0b; }
+        .payment-button.shopeepay { background-color: #EE4D2D; } /* Orange ShopeePay */
+        .payment-button.shopeepay:hover { background-color: #d14127; }
+        /* Tambahin sendiri kalo ada payment lain! */
+
+        /* Styling Tombol Musik */
+        #playPauseBtn {
+            margin-top: 25px; /* Kasih jarak */
+            padding: 12px 25px;
+            font-size: 1.1em;
+            background-color: #28a745; /* Warna hijau */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #playPauseBtn:hover {
+            background-color: #218838; /* Warna hijau lebih gelap */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        #playPauseBtn:active {
+             transform: translateY(0);
+             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Sembunyikan audio element bawaan */
+        audio {
+            display: none;
+        }
+
+        /* Styling untuk Efek Hujan */
+        .rain-container {
+            position: fixed; /* Biar hujannya nutupin layar */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Biar hujannya nggak ngeblok klik di bawahnya */
+            z-index: 5; /* Di atas overlay, di bawah container konten */
+            overflow: hidden; /* Penting biar tetesan hujan yang diluar layar nggak ganggu */
+        }
+
+        .rain-drop {
+            position: absolute;
+            width: 2px; /* Lebar tetesan hujan */
+            height: 25px; /* Panjang tetesan hujan (agak panjangin dikit biar keliatan) */
+            background: linear-gradient(to bottom, rgba(173, 216, 230, 0.2), rgba(173, 216, 230, 0.8)); /* Gradient transparan ke biru muda, agak lebih keliatan */
+            animation: rainFall linear infinite; /* Animasi jatuh tanpa henti */
+        }
+
+        /* Animasi jatuhnya hujan */
+        @keyframes rainFall {
+            0% { transform: translateY(-30px); opacity: 0; } /* Mulai dari atas, nggak keliatan */
+            5% { opacity: 1; } /* Langsung muncul */
+            95% { opacity: 1; } /* Tetep keliatan */
+            100% { transform: translateY(100vh); opacity: 0; } /* Jatuh sampe bawah layar, hilang */
+        }
+
+         /* Feedback setelah copy */
+         .copied {
+            background-color: #28a745 !important; /* Ganti warna tombol jadi hijau */
+            transform: scale(1.02); /* Kasih efek scale dikit */
+         }
+          .copied:hover {
+            background-color: #218838 !important;
+          }
+
+
+    </style>
+</head>
+<body>
+
+    <!-- Background Video (Kalo mau pake video, hapus baris body::before di CSS dan PASTIIN src videonya BENER!) -->
+    <!-- GANTI URL FILE VIDEO KAMU DI SINI!!! Bisa mp4, webm, dll. -->
+    <!-- Kalo nggak pake video background, hapus elemen <video> ini -->
+    <video autoplay loop muted playsinline id="bgVideo">
+        <source src="https://files.catbox.moe/j80lc0.mp4" type="video/mp4">
+        <!-- Tambahin source lain kalo perlu, misal: <source src="video.webm" type="video/webm"> -->
+        Browser kamu tidak mendukung tag video.
+    </video>
+
+    <!-- Rain Container (Tempat tetesan hujan akan dibuat) -->
+    <div class="rain-container"></div>
+
+    <div class="container">
+        <!-- Kamu bisa ganti gambar ini pake foto profil kamu -->
+        <!-- Kalo nggak mau pake foto, hapus aja baris img ini -->
+        <img src="https://files.catbox.moe/aejfiq.jpg" alt="" class="profile-pic"> <!-- <-- GANTI URL FOTO PROFIL KAMU DI SINI!!! -->
+
+        <h1>KayX</h1> <!-- <-- GANTI NAMA KAMU DI SINI!!! -->
+        <p class="bio">Hallo 👋🏻, selamat datang di website saya , website ini di buat untuk mempermudah dalam mengakses payment dan aku medsos saya.saya menyarankan anda untuk menyalakan situs destop bila di hp</p> <!-- <-- GANTI DESKRIPSI KAMU DI SINI (Hapus kalo nggak mau)!!! -->
+
+        <!-- SECTION LINK MEDIA SOSIAL -->
+        <div class="social-media-section">
+            <!-- Link Medsos. Ganti # dengan link beneran punya kamu ya! -->
+            <a href="https://www.instagram.com/kaysukaoz" target="_blank" class="link-button instagram">Instagram</a> <!-- <-- GANTI LINK INSTAGRAM KAMU!!! -->
+            <a href="https://wa.me/62895605811717" target="_blank" class="link-button whatsapp">No WhatsApp kayX</a> <!-- <-- GANTI LINK WHATSAPP NOMOR KAMU (pake 62...)!!! -->
+             <!-- Contoh link WhatsApp Channel, ganti ID_CHANNEL_KAMU -->
+             <a href="https://whatsapp.com/channel/0029Vb5vuZ1EKyZNobrQW72R" target="_blank" class="link-button whatsapp-channel">Ch pemnimbun sc</a> <!-- <-- GANTI LINK WHATSAPP CHANNEL KAMU (Hapus kalo nggak punya)!!! -->
+            <a href="https://www.tiktok.com/@usernamekamu" target="_blank" class="link-button tiktok">TikTok</a> <!-- <-- GANTI LINK TIKTOK KAMU!!! -->
+            <a href="https://whatsapp.com/channel/0029Vb4qvO1HrDZYkh0g6Z0X" target="_blank" class="link-button WhatsApp-channel2">Chanel ke 2 kayX</a> <!-- <-- GANTI LINK CHANEL WHATSAPP KE 2 KAMU!!! -->
+            <!-- Tambahin link lain di sini kalo perlu! Copy-paste aja baris <a> di atas -->
+            <!-- Contoh: <a href="URL_LINK_LAIN" target="_blank" class="link-button">Nama Link</a> -->
+        </div>
+
+        <!-- SECTION PAYMENT / SUPPORT -->
+        <div class="payment-section">
+            <h2>Payment yang tersedia</h2> <!-- Judul untuk bagian payment -->
+            <!-- Tombol Payment. Ganti data-number atau href dengan info payment kamu! -->
+
+            <!-- QRIS: Langsung link ke gambar QRIS kamu -->
+            <a href="https://files.catbox.moe/aejfiq.jpg" target="_blank" class="payment-button qris">Scan QRIS</a> <!-- <-- GANTI URL GAMBAR QRIS KAMU!!! -->
+
+            <!-- DANA: Button dengan nomor di data-attribute -->
+            <button class="payment-button dana" data-number="081234567890">Salin Nomor DANA</button> <!-- <-- GANTI NOMOR DANA KAMU!!! -->
+
+            <!-- OVO: Button dengan nomor di data-attribute -->
+            <button class="payment-button ovo" data-number="089876543210">Salin Nomor OVO</button> <!-- <-- GANTI NOMOR OVO KAMU!!! -->
+
+            <!-- GoPay: Button dengan nomor di data-attribute -->
+            <button class="payment-button gopay" data-number="081122334455">Salin Nomor GoPay</button> <!-- <-- GANTI NOMOR GOPAY KAMU!!! -->
+
+            <!-- ShopeePay: Button dengan nomor di data-attribute -->
+            <button class="payment-button shopeepay" data-number="087766554433">Salin Nomor ShopeePay</button> <!-- <-- GANTI NOMOR SHOPEEPAY KAMU!!! -->
+
+            <!-- Tambahin tombol payment lain di sini kalo perlu! Copy-paste aja baris <button> di atas, ganti class, teks, dan data-number -->
+        </div>
+
+        <!-- Elemen Audio (Tersembunyi) -->
+        <!-- GANTI URL FILE MUSIK KAMU DI SINI!!! Pastiin formatnya mp3, wav, atau ogg -->
+        <audio id="myAudio" src="https://files.catbox.moe/0s605g.mp3"></audio>
+
+        <!-- Tombol Kontrol Musik -->
+        <button id="playPauseBtn">Sebatas Teman</button>
+
+    </div>
+
+    <script>
+        // Script buat kontrol musik
+        const myAudio = document.getElementById('myAudio');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+
+        // Fungsi buat toggle play/pause
+        function togglePlayPause() {
+             if (myAudio.paused) {
+                myAudio.play().catch(error => {
+                    // Tangani error kalo autoplay diblokir browser
+                    console.error("Gagal memutar musik:", error);
+                    // Tidak perlu alert lagi, cukup log atau ganti teks tombol kalau perlu
+                     playPauseBtn.textContent = 'Putar Musik'; // Pastikan tombol kembali
+                });
+                playPauseBtn.textContent = 'Jeda Musik'; // Tombol berubah jadi "Jeda"
+                console.log('Musik diputar!');
+            } else {
+                myAudio.pause();
+                playPauseBtn.textContent = 'Putar Musik'; // Tombol berubah jadi "Putar"
+                console.log('Musik dijeda!');
+            }
+        }
+
+        // Tambahin event listener ke tombol musik
+        playPauseBtn.addEventListener('click', togglePlayPause);
+
+        // Opsional: Reset tombol kalo musiknya selesai
+        myAudio.addEventListener('ended', () => {
+            playPauseBtn.textContent = 'Putar Musik';
+            console.log('Musik selesai.');
+        });
+
+         // Opsional: Atur volume default (misal 50%)
+         myAudio.volume = 0.5; // Angka 0.0 (diam) sampe 1.0 (maksimal)
+
+
+        // --- Script buat Efek Hujan ---
+        const rainContainer = document.querySelector('.rain-container');
+        const numberOfDrops = 150; // Jumlah tetesan hujan (coba ganti angkanya kalo mau lebih banyak/sedikit)
+
+        function createRainDrop() {
+            const drop = document.createElement('div');
+            drop.classList.add('rain-drop');
+
+            // Atur posisi horizontal random
+            drop.style.left = Math.random() * 100 + 'vw'; // 'vw' = viewport width (persen lebar layar)
+
+            // Atur durasi animasi random (biar jatuhnya beda-beda kecepatannya)
+            const animationDuration = Math.random() * 1.5 + 0.7; // Durasi antara 0.7s sampai 2.2s (agak lambat dikit)
+            drop.style.animationDuration = animationDuration + 's';
+
+             // Atur delay animasi random (biar jatuhnya nggak barengan)
+            const animationDelay = Math.random() * 6; // Delay antara 0s sampai 6s
+            drop.style.animationDelay = animationDelay + 's';
+
+
+            // Listener untuk reset properti setelah setiap iterasi animasi
+            // Ini penting karena animasinya infinite
+            drop.addEventListener('animationiteration', () => {
+                 drop.style.left = Math.random() * 100 + 'vw';
+                 drop.style.animationDuration = (Math.random() * 1.5 + 0.7) + 's';
+                 drop.style.animationDelay = (Math.random() * 6) + 's';
+            });
+
+            return drop;
+        }
+
+        // Buat dan tambahin tetesan hujan sebanyak yang diinginkan
+        for (let i = 0; i < numberOfDrops; i++) {
+            const drop = createRainDrop();
+            rainContainer.appendChild(drop);
+        }
+
+         console.log(`Membuat ${numberOfDrops} tetesan hujan...`);
+         console.log(`Memuat file audio dari: ${myAudio.src}`);
+         const videoElement = document.getElementById('bgVideo');
+         const videoSrc = videoElement ? (videoElement.querySelector('source') ? videoElement.querySelector('source').src : videoElement.src) : 'Tidak ada video background';
+         console.log(`Memuat file video dari: ${videoSrc}`);
+
+
+        // --- Script buat Copy to Clipboard (Untuk Payment Numbers) ---
+        const paymentButtons = document.querySelectorAll('.payment-button');
+
+        paymentButtons.forEach(button => {
+            // Hanya proses button yang punya data-number (bukan link QRIS)
+            if (button.dataset.number) {
+                button.addEventListener('click', () => {
+                    const numberToCopy = button.dataset.number;
+                    const originalText = button.textContent;
+
+                    navigator.clipboard.writeText(numberToCopy).then(() => {
+                        // Sukses copy
+                        button.textContent = 'Copied!';
+                         button.classList.add('copied'); // Tambahkan class 'copied'
+
+                        // Kembalikan teks dan warna tombol setelah beberapa saat
+                        setTimeout(() => {
+                            button.textContent = originalText;
+                             button.classList.remove('copied'); // Hapus class 'copied'
+                        }, 1500); // Kembali setelah 1.5 detik
+
+                         console.log(`Nomor ${numberToCopy} berhasil disalin!`);
+
+                    }).catch(err => {
+                        // Gagal copy (mungkin karena browser belum support atau izin ditolak)
+                        console.error('Gagal menyalin nomor: ', err);
+                        alert(`Gagal menyalin nomor. Nomor: ${numberToCopy}. Anda bisa salin manual.`); // Kasih info ke user
+                    });
+                });
+            }
+        });
+
+
+    </script>
+
+</body>
+</html>
